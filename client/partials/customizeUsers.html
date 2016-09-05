@@ -1,0 +1,31 @@
+<!-- create and delete user -->
+
+<h2>Users Controller</h2>
+<form class="form-group">
+	<label>First Name</label>
+	<input class="form-control" type="text" style="width: 25%;" ng-model='newUser.first_name'></input>
+	<label>Last Name</label>
+	<input class="form-control" type="text" style="width: 25%;" ng-model='newUser.last_name'></input>
+	<label>Favorite Language</label>
+	<input class="form-control" type="text" style="width: 25%;" ng-model='newUser.lang'></input><br>
+	<input type="submit" ng-click='addUser()' value="Create User"></input>
+</form><br>
+
+<table class="table table-striped" style="border:1px solid tan;">
+	<thead>
+		<tr>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Fav Language</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat='user in users'>
+			<td>{{user.first_name}}</td>
+			<td>{{user.last_name}}</td>
+			<td>{{user.lang}}</td>
+			<td><button ng-click='deleteUser(user)'>Delete User</button></td>
+		</tr>
+	</tbody>
+</table>

@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+<head> 
+    <meta charset="UTF-8">
+	<title>TODO: Title goes here</title>
+	<meta name="author" content="Amanda Fry ">
+	<link rel="stylesheet" type="text/css" href="./css/AmandaTemplate.css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.min.js"></script>
+
+    <script type="text/javascript">
+
+        var myApp = angular.module('myApp',['ngRoute']);
+
+        myApp.config(function($routeProvider){
+            $routeProvider
+                .when('/',{
+                    templateUrl: 'partials/customizeUsers.html',
+                    controller: "CustomizeUsersController"
+                })
+                .when('/list_users',{
+                    templateUrl: 'partials/userList.html',
+                    controller: "UserListsController"
+                })
+                .otherwise({
+                    redirectTo: '/'
+                })
+        });
+
+        myApp.factory('UserFactory', function(){
+            var users = [
+                {first_name:"Yikihiro", last_name:"Matsumoto", lang:"Ruby"},
+                {first_name:"Ryan", last_name:"Dahl", lang:"JavaScript"},
+                {first_name:"Brendan", last_name:"Eich", lang:"JavaScript"},
+            ];
+
+            var factory = {};
+
+            factory.getUsers = function(callback){callback(users)};
+
+            factory.addUser = function(newUser){
+                users.push(newUser);
+            }
+
+            factory.deleteUser = function(user){
+                users.splice(users.indexOf(user),1);
+            }
+
+            return factory;
+        });
+
+        myApp.controller('CustomizeUsersController', function($scope,UserFactory){
+            $scope.users = [];
+            UserFactory.getUsers(function(data){
+                $scope.users = data;
+            });
+
+            $scope.addUser = function(){
+                UserFactory.addUser($scope.newUser)
+                $scope.newUser = {};
+            }
+
+            $scope.deleteUser = function(user){
+                UserFactory.deleteUser(user);
+            }
+        });
+
+        myApp.controller('UserListsController', function($scope,UserFactory){
+            $scope.users = [];
+            UserFactory.getUsers(function(data){
+                $scope.users = data;
+            })
+        });
+
+    </script>
+</head>
+
+<body>	
+    <div class="container">
+        <div class="header">
+            <h1><span>(MEAN) </span> Survey</h1>
+            <h3>Assigment - Exam</h3>
+            <div class="descr">
+                <p>Placeholder assigment</p>
+                <ul>
+                    <li>One</li>
+                    <li>Two</li>
+                    <li>Three</li>
+                </ul>
+            </div>
+        </div><!-- end of header content-->
+        <div class="maincontent">
+            <div ng-app='myApp'>
+                <a href="#/" style="margin-right: 20px;">Customize Users</a>
+                <a href="#/list_users">List Users</a>
+                <div ng-view=''></div>
+            </div>
+        </div><!-- end of main content-->
+        <div class="footer">
+            <p>created by: Amanda Fry</p>
+            <a class="footerSpace" href="mailto:FeAmandaF@hotmail.com">FeAmandaF@hotmial.com</a>
+            <a href="https://www.linkedin.com/in/amandafry1">Amanda's LikedIn profile</a>
+        </div><!-- end of footer -->
+      </div><!-- end of container -->
+</body>
+</html>
