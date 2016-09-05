@@ -1,193 +1,62 @@
-// var myApp = anglur.module('myApp', ['ngRoute', 'ngMessages']);
+var myApp = angular.module('myApp',['ngRoute']);
 
-// myApp.config(function($routeProvider){
-// 	$routeProvider
-// 	.when('/',{
-// 		templateURL:'partial/login.html',
-// 		controller: 'loginController'
-// 	});
-// 	.when('/dashboard',{
-// 		templateURL: 'partial/dashboard.html',
-// 		controller: 'dashboardController'
-// 	});
-// 	.when('/polls/:id', {
-// 		templateURL:'partial/poll.html',
-// 		controller: 'pollController'
-// 	})
-// 	.when('/create',{
-// 		templateURL: 'partial/create.html',
-// 		controller: 'createController'
-// 	})
-// 	.otherwise({
-// 		redirectTo: '/'
-// 	})
-// });
+myApp.config(function($routeProvider){
+    $routeProvider
+        .when('/',{
+            templateUrl: 'partials/customizeUsers.html',
+            controller: "CustomizeUsersController"
+        })
+        .when('/list_users',{
+            templateUrl: 'partials/userList.html',
+            controller: "UserListsController"
+        })
+        .otherwise({
+            redirectTo: '/'
+        })
+});
 
-// myApp.factory('userFactory', function($http){
-// 	var factory = {};
+myApp.factory('UserFactory', function(){
+    var users = [
+        {first_name:"Yikihiro", last_name:"Matsumoto", lang:"Ruby"},
+        {first_name:"Ryan", last_name:"Dahl", lang:"JavaScript"},
+        {first_name:"Brendan", last_name:"Eich", lang:"JavaScript"},
+    ];
 
-// 	factory.create = function(newUser,callback){
-//         $http.post('/users/create',newUser).success(function(data){
-//             factory.currentUser = data;
-//             callback();
-//         });
-//     };
+    var factory = {};
 
-//     factory.showCurrentUser = function(callback){
-//         callback(factory.currentUser);
-//     };
+    factory.getUsers = function(callback){callback(users)};
 
-//     factory.logout = function(callback){
-//         factory.currentUser = {};
-//         callback(factory.currentUser);
-//     };
+    factory.addUser = function(newUser){
+        users.push(newUser);
+    }
 
-// 	return factory
-// });
+    factory.deleteUser = function(user){
+        users.splice(users.indexOf(user),1);
+    }
 
+    return factory;
+});
 
-// myApp.factory('pollFactory', function($http){
-//     var factory = {};
+myApp.controller('CustomizeUsersController', function($scope,UserFactory){
+    $scope.users = [];
+    UserFactory.getUsers(function(data){
+        $scope.users = data;
+    });
 
-//     factory.show = function(callback){
-//         $http.get('/polls').success(function(data){
-//             factory.polls = data;
-//             callback(factory.polls);
-//         });
-//     };
+    $scope.addUser = function(){
+        UserFactory.addUser($scope.newUser)
+        $scope.newUser = {};
+    }
 
-//     factory.showOne = function(poll,callback){
-//         $http.get('/polls/'+poll._id).success(function(data){
-//             factory.currentPoll = data;
-//             callback();
-//         });
-//     };
+    $scope.deleteUser = function(user){
+        UserFactory.deleteUser(user);
+    }
+});
 
-//     factory.create = function(newPoll,callback){
-//         $http.post('/polls/create',newPoll).success(function(data){
-//             factory.polls = data;
-//             callback();
-//         });
-//     }
+myApp.controller('UserListsController', function($scope,UserFactory){
+    $scope.users = [];
+    UserFactory.getUsers(function(data){
+        $scope.users = data;
+    })
+});
 
-//     factory.showCurrentPoll = function(callback){
-//         callback(factory.currentPoll);
-//     };
-
-//     factory.delete = function(poll,callback){
-//         $http.post('/polls/delete/'+poll._id).success(function(data){
-//             factory.polls = data;
-//             callback(factory.polls);
-//         });
-//     };
-
-//     factory.vote = function(option,callback){
-//         $http.post('/polls/vote/'+factory.currentPoll._id,{option:option}).success(function(data){
-//             factory.poll = data;
-//             callback(factory.poll);
-//         });
-//     };
-
-//     return factory;
-// })
-
-// myApp.controller('loginController', function($scope,$location,userFactory){
-//     $scope.login = function(){
-//         if(!$scope.newUser)
-//             alert("Name cannot be blank")
-//         else{
-//             userFactory.create($scope.newUser,function(){
-//                 $location.url('/dashboard');
-//             });
-//         }
-//     };
-// });
-
-// myApp.controller('dashboardController', function($scope,$location,userFactory,pollFactory){
-//     userFactory.showCurrentUser(function(data){
-//         $scope.currentUser = data;
-//         if(!data.name)
-//             $location.url('/');
-//     });
-
-//     pollFactory.show(function(data){
-//         $scope.polls = data;
-//     });
-
-//     $scope.showOne = function(poll){
-//         pollFactory.showOne(poll,function(){
-//             $location.url('/polls/'+poll._id);
-//         });
-//     };
-
-//     $scope.create = function(){
-//         pollFactory.create($scope.newPoll,function(data){
-//             $scope.polls = data;
-//         });
-//     };
-
-//     $scope.delete = function(poll){
-//         pollFactory.delete(poll,function(data){
-//             $scope.polls = data;
-//         });
-//     };
-
-//     $scope.logout = function(){
-//         userFactory.logout(function(data){
-//             $scope.currentUser = data;
-//             $location.url('/');
-//         })
-//     }
-// });
-
-// myApp.controller('pollController', function($scope,$location,pollFactory){
-//     pollFactory.showCurrentPoll(function(data){
-//         $scope.poll = data;
-//     });
-
-//     $scope.vote = function(optionNumber){
-//         pollFactory.vote(optionNumber,function(data){
-//             $scope.poll = data;
-//         });
-//     };
-
-// });
-
-// myApp.controller('createController', function($scope,$location,pollFactory,userFactory){
-//     userFactory.showCurrentUser(function(data){
-//         $scope.currentUser = data;
-//         if(!data.name)
-//             $location.url('/');
-//     });
-
-//     $scope.create = function(){
-//         var error = false;
-//         pollFactory.show(function(data){
-//             $scope.polls = data;
-//         });
-//         if(!$scope.newPoll || !$scope.newPoll.question || !$scope.newPoll.option1 || !$scope.newPoll.option2 || !$scope.newPoll.option3 || !$scope.newPoll.option4){
-//             alert("No fields can be empty");
-//             error = true;
-//         }
-//         for(i in $scope.polls){
-//             if($scope.polls[i].question==$scope.newPoll.question){
-//                 alert("No duplicate questions");
-//                 error = true;
-//             }
-//         }
-//         if($scope.newPoll.question.length<8){
-//             alert("Question must be at least 8 characters");
-//             error = true;
-//         }
-//         if($scope.newPoll.option1.length<3 || $scope.newPoll.option2.length<3 || $scope.newPoll.option3.length<3 || $scope.newPoll.option4.length<3){
-//             alert("All options must be at least 3 characters");
-//             error = true;
-//         }
-//         if(!error){
-//             $scope.newPoll.name = $scope.currentUser.name;
-//             pollFactory.create($scope.newPoll,function(){
-//                 $location.url('/dashboard')
-//             });
-//         }
-//     };
-// })
